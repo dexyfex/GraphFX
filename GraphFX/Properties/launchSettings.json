@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GraphFX": {
+      "commandName": "Project",
+      "workingDirectory": ".."
+    }
+  }
+}
