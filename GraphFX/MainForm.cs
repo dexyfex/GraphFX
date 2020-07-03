@@ -63,7 +63,9 @@ namespace GraphFX
 
         Graph Graph = new ZetaGraph();
 
+        Color BackgroundColour = Color.Black;
 
+        bool GraphRunning = true;
 
 
 
@@ -133,6 +135,7 @@ namespace GraphFX
 
             UpdateControlInputs(elapsed);
 
+            Renderer.DXMan.clearcolour = BackgroundColour;
             Renderer.Update(elapsed, MouseLastPoint.X, MouseLastPoint.Y);
             Renderer.BeginRender(context);
 
@@ -259,9 +262,9 @@ namespace GraphFX
                 gridVerts.Clear();
 
                 float s = gridSize * gridCount * 0.5f;
-                uint cblack = (uint)Color.Black.ToRgba();
-                uint cgray = (uint)Color.Gray.ToRgba();
-                uint cred = (uint)Color.Red.ToRgba();
+                uint cgridlg = (uint)Color.LightGray.ToRgba();
+                uint cgridsm = (uint)Color.DimGray.ToRgba();
+                uint cred = (uint)Color.DarkRed.ToRgba();
                 uint cgrn = (uint)Color.Green.ToRgba();
                 int interval = 10;
 
@@ -270,10 +273,10 @@ namespace GraphFX
                     float o = (gridSize * i) - s;
                     if ((i % interval) != 0)
                     {
-                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(o, -s, 0), Colour = cgray });
-                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(o, s, 0), Colour = cgray });
-                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(-s, o, 0), Colour = cgray });
-                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(s, o, 0), Colour = cgray });
+                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(o, -s, 0), Colour = cgridsm });
+                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(o, s, 0), Colour = cgridsm });
+                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(-s, o, 0), Colour = cgridsm });
+                        gridVerts.Add(new VertexTypePC() { Position = new Vector3(s, o, 0), Colour = cgridsm });
                     }
                 }
                 for (int i = 0; i <= gridCount; i++) //draw main lines last, so they are on top
@@ -281,8 +284,8 @@ namespace GraphFX
                     float o = (gridSize * i) - s;
                     if ((i % interval) == 0)
                     {
-                        var cx = (o == 0) ? cred : cblack;
-                        var cy = (o == 0) ? cgrn : cblack;
+                        var cx = (o == 0) ? cred : cgridlg;
+                        var cy = (o == 0) ? cgrn : cgridlg;
                         gridVerts.Add(new VertexTypePC() { Position = new Vector3(o, -s, 0), Colour = cy });
                         gridVerts.Add(new VertexTypePC() { Position = new Vector3(o, s, 0), Colour = cy });
                         gridVerts.Add(new VertexTypePC() { Position = new Vector3(-s, o, 0), Colour = cx });
@@ -310,7 +313,7 @@ namespace GraphFX
         {
             if (Graph == null) return;
 
-            Graph.Update(elapsed);
+            Graph.Update(GraphRunning ? elapsed : 0.0f);
 
             foreach (var line in Graph.Lines)
             {
@@ -350,7 +353,7 @@ namespace GraphFX
 
             if (MouseRButtonDown)
             {
-                //SelectMousedItem();
+                GraphRunning = !GraphRunning;
             }
 
             MouseX = e.X; //to stop jumps happening on mousedown, sometimes the last MouseMove event was somewhere else... (eg after clicked a menu)

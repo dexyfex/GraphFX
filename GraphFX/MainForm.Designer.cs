@@ -34,7 +34,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(736, 487);
+            this.ClientSize = new System.Drawing.Size(1109, 796);
             this.Name = "MainForm";
             this.Text = "GraphFX by dexyfex";
             this.Load += new System.EventHandler(this.MainForm_Load);
