@@ -38,6 +38,7 @@ namespace GraphFX
 
         bool MouseLButtonDown = false;
         bool MouseRButtonDown = false;
+        bool MouseMButtonDown = false;
         int MouseX;
         int MouseY;
         System.Drawing.Point MouseDownPoint;
@@ -66,7 +67,10 @@ namespace GraphFX
         Color BackgroundColour = Color.Black;
 
         bool GraphRunning = true;
-
+        bool ShowGraphInputs = true;
+        bool ShowGraphOutputs = true;
+        float GraphInputDisplayRadius = 0.005f;
+        float GraphOutputDisplayRadius = 0.003f;
 
 
         public MainForm()
@@ -321,6 +325,26 @@ namespace GraphFX
                 Renderer.LineVerts.Add(line.Vertex1);
             }
 
+            if (ShowGraphInputs)
+            {
+                foreach (var input in Graph.Inputs.Values)
+                {
+                    if (input.Draw) //.Type == GraphInOutType.Vector2)
+                    {
+                        Renderer.RenderCircle2D(input.Value, camera.OrthographicSize* GraphInputDisplayRadius, (uint)Color.Silver.ToRgba());
+                    }
+                }
+            }
+            if (ShowGraphOutputs)
+            {
+                foreach (var output in Graph.Outputs.Values)
+                {
+                    if (output.Draw) //.Type == GraphInOutType.Vector2)
+                    {
+                        Renderer.RenderCircle2D(output.Value, camera.OrthographicSize * GraphOutputDisplayRadius, (uint)Color.Red.ToRgba());
+                    }
+                }
+            }
         }
 
 
@@ -337,6 +361,7 @@ namespace GraphFX
             {
                 case MouseButtons.Left: MouseLButtonDown = true; break;
                 case MouseButtons.Right: MouseRButtonDown = true; break;
+                case MouseButtons.Middle: MouseMButtonDown = true; break;
             }
 
             //if (!ToolsPanelShowButton.Focused)
@@ -350,8 +375,11 @@ namespace GraphFX
             if (MouseLButtonDown)
             {
             }
-
             if (MouseRButtonDown)
+            {
+                Graph.Inputs["Default"].Value = camera.MouseRayNear + camera.Position;
+            }
+            if (MouseMButtonDown)
             {
                 GraphRunning = !GraphRunning;
             }
@@ -366,6 +394,7 @@ namespace GraphFX
             {
                 case MouseButtons.Left: MouseLButtonDown = false; break;
                 case MouseButtons.Right: MouseRButtonDown = false; break;
+                case MouseButtons.Middle: MouseMButtonDown = false; break;
             }
 
             if (e.Button == MouseButtons.Left)
@@ -389,6 +418,7 @@ namespace GraphFX
             }
             if (MouseRButtonDown)
             {
+                Graph.Inputs["Default"].Value = camera.MouseRayNear + camera.Position;
             }
 
             UpdateMousePosition(e);
@@ -403,6 +433,24 @@ namespace GraphFX
             {
                 camera.MouseZoom(e.Delta);
             }
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            switch(e.KeyCode)
+            {
+                case Keys.Space:
+                    GraphRunning = !GraphRunning;
+                    break;
+                case Keys.I:
+                    ShowGraphInputs = !ShowGraphInputs;
+                    break;
+                case Keys.O:
+                    ShowGraphOutputs = !ShowGraphOutputs;
+                    break;
+            }
+
         }
     }
 }

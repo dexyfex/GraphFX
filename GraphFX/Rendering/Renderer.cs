@@ -265,7 +265,32 @@ namespace GraphFX.Rendering
 
         }
 
-        public void RenderCircle(Vector3 position, float radius, uint col)
+        public void RenderCircle2D(Vector3 position, float radius, uint col)
+        {
+            const int Reso = 36;
+            const float MaxDeg = 360f;
+            const float DegToRad = 0.0174533f;
+            const float Ang = DegToRad * MaxDeg / Reso;
+
+            var dir = Vector3.UnitZ;// .Normalize(position - camera.Position);
+            var up = Vector3.Normalize(dir.GetPerpVec());
+            var axis = Vector3.Cross(dir, up);
+            var c = new VertexTypePC[Reso];
+
+            for (var i = 0; i < Reso; i++)
+            {
+                var rDir = Quaternion.RotationAxis(dir, i * Ang).Multiply(axis);
+                c[i].Position = position + (rDir * radius);
+                c[i].Colour = col;
+            }
+
+            for (var i = 0; i < c.Length; i++)
+            {
+                LineVerts.Add(c[i]);
+                LineVerts.Add(c[(i + 1) % c.Length]);
+            }
+        }
+        public void RenderCircle3D(Vector3 position, float radius, uint col)
         {
             const int Reso = 36;
             const float MaxDeg = 360f;
